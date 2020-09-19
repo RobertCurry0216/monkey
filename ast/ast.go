@@ -1,12 +1,14 @@
 package ast
 
 import (
+	"bytes"
 	"monkey/token"
 )
 
 // Node is the base interface for all nodes in the parser
 type Node interface {
 	TokenLiteral() string
+	String() string
 }
 
 // Statement is not strictly neccessary but will be usefull to distinguish node types
@@ -34,6 +36,15 @@ func (p *Program) TokenLiteral() string {
 	return ""
 }
 
+func (p *Program) String() string {
+	var out bytes.Buffer
+	for _, s := range p.Statements {
+		out.WriteString(s.String())
+	}
+
+	return out.String()
+}
+
 // LetStatement is the Node for statements like: let x = 5;
 type LetStatement struct {
 	Token token.Token // the token.LET token
@@ -46,6 +57,23 @@ func (ls *LetStatement) statementNode() {}
 // TokenLiteral is the token string
 func (ls *LetStatement) TokenLiteral() string { return ls.Token.Literal }
 
+// String gets the literal string of the LetStatement
+func (ls *LetStatement) String() string {
+	var out bytes.Buffer
+
+	out.WriteString(ls.TokenLiteral() + " ")
+	out.WriteString(ls.Name.String())
+	out.WriteString(" = ")
+
+	if ls.Value != nil {
+		out.WriteString(ls.Value.String())
+	}
+
+	out.WriteString(";")
+
+	return out.String()
+}
+
 // Identifier is the Node for variable names
 type Identifier struct {
 	Token token.Token
@@ -56,3 +84,53 @@ func (i *Identifier) expressionNode() {}
 
 // TokenLiteral is the token string
 func (i *Identifier) TokenLiteral() string { return i.Token.Literal }
+
+// String get the literal string of the Identifier
+func (i *Identifier) String() string { return i.Value }
+
+// ReturnStatement => return <expression>
+type ReturnStatement struct {
+	Token       token.Token
+	ReturnValue Expression
+}
+
+func (rs *ReturnStatement) statementNode() {}
+
+// TokenLiteral is the token string
+func (rs *ReturnStatement) TokenLiteral() string {
+	return rs.Token.Literal
+}
+
+func (rs *ReturnStatement) String() string {
+	var out bytes.Buffer
+
+	out.WriteString(rs.TokenLiteral() + " ")
+
+	if rs.ReturnValue != nil {
+		out.WriteString(rs.ReturnValue.String())
+	}
+
+	out.WriteString(";")
+
+	return out.String()
+}
+
+// ExpressionStatement => <expression>
+type ExpressionStatement struct {
+	Token      token.Token
+	Expression Expression
+}
+
+func (es *ExpressionStatement) statmentNode() {}
+
+// TokenLiteral is the token string of the first token in the expression
+func (es *ExpressionStatement) TokenLiteral() string {
+	return es.Token.Literal
+}
+
+func (es *ExpressionStatement) String() string {
+	if es.Expression != nil {
+		return es.Expression.String()
+	}
+	return ""
+}
