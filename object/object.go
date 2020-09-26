@@ -3,9 +3,10 @@ package object
 import "fmt"
 
 const (
-	IntegerObj = "INTEGER"
-	BooleanObj = "BOOLEAN"
-	NullObj    = "NULL"
+	IntegerObj     = "INTEGER"
+	BooleanObj     = "BOOLEAN"
+	NullObj        = "NULL"
+	ReturnValueObj = "RETURN_VALUE"
 )
 
 //ObjectType is an enum that represents the object type
@@ -50,3 +51,14 @@ func (n *Null) Type() ObjectType { return NullObj }
 
 //Inspect gets the string representation
 func (n *Null) Inspect() string { return "null" }
+
+//ReturnValue is pased around the evaluator to determine the value to be returned
+type ReturnValue struct {
+	Value Object
+}
+
+// Type gets the ObjectType
+func (rv *ReturnValue) Type() ObjectType { return ReturnValueObj }
+
+//Inspect gets the string representation
+func (rv *ReturnValue) Inspect() string { return rv.Value.Inspect() }

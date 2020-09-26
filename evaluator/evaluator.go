@@ -17,9 +17,14 @@ func Eval(node ast.Node) object.Object {
 
 	//Statements
 	case *ast.Program:
-		return evalStatements(node.Statements)
+		return evalProgram(node.Statements)
 	case *ast.ExpressionStatement:
 		return Eval(node.Expression)
+	case *ast.BlockStatement:
+		return evalBlockStatement(node.Statements)
+	case *ast.ReturnStatement:
+		val := Eval(node.ReturnValue)
+		return &object.ReturnValue{Value: val}
 		//Expressions
 	case *ast.IntegerLiteral:
 		return &object.Integer{Value: node.Value}
@@ -32,16 +37,33 @@ func Eval(node ast.Node) object.Object {
 		left := Eval(node.Left)
 		right := Eval(node.Right)
 		return evalInfIxExpression(node.Operator, left, right)
+	case *ast.IfExpression:
+		return evalIfExpresssion(node)
 	}
-
 	return nil
 }
 
-func evalStatements(statements []ast.Statement) object.Object {
+func evalProgram(statements []ast.Statement) object.Object {
 	var result object.Object
 
 	for _, statement := range statements {
 		result = Eval(statement)
+		if returnValue, ok := result.(*object.ReturnValue); ok {
+			return returnValue.Value
+		}
+	}
+
+	return result
+}
+
+func evalBlockStatement(statements []ast.Statement) object.Object {
+	var result object.Object
+
+	for _, statement := range statements {
+		result = Eval(statement)
+		if result != nil && result.Type() == object.ReturnValueObj {
+			return result
+		}
 	}
 
 	return result
@@ -93,9 +115,9 @@ func evalInfIxExpression(operator string, left, right object.Object) object.Obje
 
 		// TODO: determine truthyness
 	case operator == "==":
-		return nativeBoolToBoolObject(left == right)
+		return nativeBoolToBoolObject(isTruthy(left) == isTruthy(right))
 	case operator == "!=":
-		return nativeBoolToBoolObject(left != right)
+		return nativeBoolToBoolObject(isTruthy(left) != isTruthy(right))
 	default:
 		return nullObj
 	}
@@ -124,5 +146,35 @@ func evalIntegerInfixExpression(operator string, left, right object.Object) obje
 		return nativeBoolToBoolObject(leftVal != rightVal)
 	default:
 		return nullObj
+	}
+}
+
+func evalIfExpresssion(ie *ast.IfExpression) object.Object {
+	condition := Eval(ie.Condition)
+
+	if isTruthy(condition) {
+		return Eval(ie.Consequence)
+	} else if ie.Alternative != nil {
+		return Eval(ie.Alternative)
+	} else {
+		return nullObj
+	}
+}
+
+func isTruthy(obj object.Object) bool {
+	switch obj {
+	case trueObj:
+		return true
+	case falseObj:
+		return false
+	case nullObj:
+		return false
+	default:
+		switch {
+		case obj.Type() == object.IntegerObj:
+			return obj.(*object.Integer).Value != 0
+		default:
+			return false
+		}
 	}
 }

@@ -82,22 +82,28 @@ func TestEvalBooleanExpression(t *testing.T) {
 		{"(1 < 2) == false", false},
 		{"(1 > 2) == true", false},
 		{"(1 > 2) == false", true},
+		{"1 == true", true},
+		{"1 != false", true},
+		{"-1 == true", true},
+		{"-1 != false", true},
+		{"0 == true", false},
+		{"0 != false", false},
 	}
 
 	for _, tt := range tests {
 		evaluated := testEval(tt.input)
-		testBooleanObject(t, evaluated, tt.expected)
+		testBooleanObject(t, evaluated, tt.expected, tt.input)
 	}
 }
 
-func testBooleanObject(t *testing.T, obj object.Object, expected bool) bool {
+func testBooleanObject(t *testing.T, obj object.Object, expected bool, input string) bool {
 	result, ok := obj.(*object.Boolean)
 	if !ok {
-		t.Errorf("object is not Boolean. got=%T (%+v)", obj, obj)
+		t.Errorf("test %s: object is not Boolean. got=%T (%+v)", input, obj, obj)
 		return false
 	}
 	if result.Value != expected {
-		t.Errorf("object has wrong value. got=%t, want=%t",
+		t.Errorf("test %s: object has wrong value. got=%t, want=%t", input,
 			result.Value, expected)
 		return false
 	}
@@ -119,6 +125,57 @@ func TestBangOperator(t *testing.T) {
 
 	for _, tt := range tests {
 		evaluated := testEval(tt.input)
-		testBooleanObject(t, evaluated, tt.expected)
+		testBooleanObject(t, evaluated, tt.expected, tt.input)
+	}
+}
+
+func TestIfElseExpressions(t *testing.T) {
+	tests := []struct {
+		input    string
+		expected interface{}
+	}{
+		{"if (true) { 10 }", 10},
+		{"if (false) { 10 }", nil},
+		{"if (1) { 10 }", 10},
+		{"if (1 < 2) { 10 }", 10},
+		{"if (1 > 2) { 10 }", nil},
+		{"if (1 > 2) { 10 } else { 20 }", 20},
+		{"if (1 < 2) { 10 } else { 20 }", 10},
+	}
+
+	for _, tt := range tests {
+		evaluated := testEval(tt.input)
+		integer, ok := tt.expected.(int)
+		if ok {
+			testIntegerObject(t, evaluated, int64(integer))
+		} else {
+			testNullObject(t, evaluated)
+		}
+	}
+}
+
+func testNullObject(t *testing.T, obj object.Object) bool {
+	if obj != nullObj {
+		t.Errorf("object is not NULL. got=%T (%+v)", obj, obj)
+		return false
+	}
+	return true
+}
+
+func TestReturnStatements(t *testing.T) {
+	tests := []struct {
+		input    string
+		expected int64
+	}{
+		{"return 10;", 10},
+		{"return 10; 9;", 10},
+		{"return 2 * 5; 9;", 10},
+		{"9; return 2 * 5; 9;", 10},
+		{"if (10 > 1) { if (10 > 1) { return 10; } return 1; }", 10},
+	}
+
+	for _, tt := range tests {
+		evaluated := testEval(tt.input)
+		testIntegerObject(t, evaluated, tt.expected)
 	}
 }
