@@ -3,9 +3,9 @@ package object
 import "fmt"
 
 const (
-	integerObj = "INTEGER"
-	booleanObj = "BOOLEAN"
-	nullObj    = "NULL"
+	IntegerObj = "INTEGER"
+	BooleanObj = "BOOLEAN"
+	NullObj    = "NULL"
 )
 
 //ObjectType is an enum that represents the object type
@@ -26,7 +26,7 @@ type Integer struct {
 }
 
 // Type gets the ObjectType
-func (i *Integer) Type() ObjectType { return integerObj }
+func (i *Integer) Type() ObjectType { return IntegerObj }
 
 //Inspect gets the string representation
 func (i *Integer) Inspect() string { return fmt.Sprintf("%d", i.Value) }
@@ -37,7 +37,7 @@ type Boolean struct {
 }
 
 // Type gets the ObjectType
-func (b *Boolean) Type() ObjectType { return booleanObj }
+func (b *Boolean) Type() ObjectType { return BooleanObj }
 
 //Inspect gets the string representation
 func (b *Boolean) Inspect() string { return fmt.Sprintf("%t", b.Value) }
@@ -46,7 +46,7 @@ func (b *Boolean) Inspect() string { return fmt.Sprintf("%t", b.Value) }
 type Null struct{}
 
 // Type gets the ObjectType
-func (n *Null) Type() ObjectType { return nullObj }
+func (n *Null) Type() ObjectType { return NullObj }
 
 //Inspect gets the string representation
 func (n *Null) Inspect() string { return "null" }
