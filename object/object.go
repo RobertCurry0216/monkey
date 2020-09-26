@@ -7,6 +7,7 @@ const (
 	BooleanObj     = "BOOLEAN"
 	NullObj        = "NULL"
 	ReturnValueObj = "RETURN_VALUE"
+	ErrorObj       = "ERROR"
 )
 
 //ObjectType is an enum that represents the object type
@@ -62,3 +63,14 @@ func (rv *ReturnValue) Type() ObjectType { return ReturnValueObj }
 
 //Inspect gets the string representation
 func (rv *ReturnValue) Inspect() string { return rv.Value.Inspect() }
+
+//Error is an user error
+type Error struct {
+	Message string
+}
+
+// Type gets the ObjectType
+func (e *Error) Type() ObjectType { return ErrorObj }
+
+//Inspect gets the string representation
+func (e *Error) Inspect() string { return "Error: " + e.Message }
