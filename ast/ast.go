@@ -163,6 +163,17 @@ func (il *IntegerLiteral) TokenLiteral() string { return il.Token.Literal }
 func (il *IntegerLiteral) expressionNode()      {}
 func (il *IntegerLiteral) String() string       { return il.Token.Literal }
 
+//StringLiteral => "hello world"; eg.
+type StringLiteral struct {
+	Token token.Token
+	Value string
+}
+
+// TokenLiteral is the integer as a string
+func (sl *StringLiteral) TokenLiteral() string { return sl.Token.Literal }
+func (sl *StringLiteral) expressionNode()      {}
+func (sl *StringLiteral) String() string       { return sl.Token.Literal }
+
 // FunctionLiteral represents a function
 type FunctionLiteral struct {
 	Token      token.Token

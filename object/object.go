@@ -9,6 +9,7 @@ import (
 
 const (
 	IntegerObj     = "INTEGER"
+	StringObj      = "STRING"
 	BooleanObj     = "BOOLEAN"
 	NullObj        = "NULL"
 	ReturnValueObj = "RETURN_VALUE"
@@ -38,6 +39,17 @@ func (i *Integer) Type() ObjectType { return IntegerObj }
 
 //Inspect gets the string representation
 func (i *Integer) Inspect() string { return fmt.Sprintf("%d", i.Value) }
+
+//String is the string primative
+type String struct {
+	Value string
+}
+
+// Type gets the ObjectType
+func (s *String) Type() ObjectType { return StringObj }
+
+//Inspect gets the string representation
+func (s *String) Inspect() string { return s.Value }
 
 //Boolean is an object representing true or false
 type Boolean struct {
