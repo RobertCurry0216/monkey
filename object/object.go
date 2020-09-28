@@ -15,10 +15,14 @@ const (
 	ReturnValueObj = "RETURN_VALUE"
 	ErrorObj       = "ERROR"
 	FunctionObj    = "FUNCTION"
+	BuiltinObj     = "BUILTIN"
 )
 
 //ObjectType is an enum that represents the object type
 type ObjectType string
+
+//BuiltinFunction is for the functions that come with the monkey language
+type BuiltinFunction func(args ...Object) Object
 
 //Object is the base object in monkey
 type Object interface {
@@ -121,3 +125,14 @@ func (f *Function) Inspect() string {
 
 	return out.String()
 }
+
+// Builtin is a function that comes with monkey
+type Builtin struct {
+	Fn BuiltinFunction
+}
+
+// Type gets the ObjectType
+func (bi *Builtin) Type() ObjectType { return BuiltinObj }
+
+//Inspect gets the string representation
+func (bi *Builtin) Inspect() string { return "builtin function" }
