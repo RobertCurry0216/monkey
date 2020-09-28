@@ -16,6 +16,7 @@ const (
 	ErrorObj       = "ERROR"
 	FunctionObj    = "FUNCTION"
 	BuiltinObj     = "BUILTIN"
+	ArrayObj       = "ARRAY"
 )
 
 //ObjectType is an enum that represents the object type
@@ -136,3 +137,27 @@ func (bi *Builtin) Type() ObjectType { return BuiltinObj }
 
 //Inspect gets the string representation
 func (bi *Builtin) Inspect() string { return "builtin function" }
+
+// Array is a function that comes with monkey
+type Array struct {
+	Elements []Object
+}
+
+// Type gets the ObjectType
+func (a *Array) Type() ObjectType { return ArrayObj }
+
+//Inspect gets the string representation
+func (a *Array) Inspect() string {
+	var out bytes.Buffer
+
+	elements := []string{}
+	for _, e := range a.Elements {
+		elements = append(elements, e.Inspect())
+	}
+
+	out.WriteString("[")
+	out.WriteString(strings.Join(elements, ", "))
+	out.WriteString("]")
+
+	return out.String()
+}
