@@ -61,6 +61,9 @@ func TestNextTokenLong(t *testing.T) {
 	"foobar"
 	"foo bar"
 	[1, 2];
+	while(x < 10) {
+		let x = x + 1;
+	}
 	`
 
 	tests := []struct {
@@ -148,6 +151,23 @@ func TestNextTokenLong(t *testing.T) {
 		{token.INT, "2"},
 		{token.RBRACKET, "]"},
 		{token.SEMICOLON, ";"},
+
+		{token.WHILE, "while"},
+		{token.LPAREN, "("},
+		{token.IDENT, "x"},
+		{token.LT, "<"},
+		{token.INT, "10"},
+		{token.RPAREN, ")"},
+		{token.LBRACE, "{"},
+		{token.LET, "let"},
+		{token.IDENT, "x"},
+		{token.ASSIGN, "="},
+		{token.IDENT, "x"},
+		{token.PLUS, "+"},
+		{token.INT, "1"},
+		{token.SEMICOLON, ";"},
+		{token.RBRACE, "}"},
+
 		{token.EOF, ""},
 	}
 

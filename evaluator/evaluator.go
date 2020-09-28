@@ -68,6 +68,8 @@ func Eval(node ast.Node, env *object.Enviroment) object.Object {
 		return evalInfIxExpression(node.Operator, left, right)
 	case *ast.IfExpression:
 		return evalIfExpresssion(node, env)
+	case *ast.WhileExpression:
+		return evalWhileExpression(node, env)
 	case *ast.Identifier:
 		return evalIdentifier(node, env)
 	case *ast.FunctionLiteral:
@@ -272,6 +274,27 @@ func evalIfExpresssion(ie *ast.IfExpression, env *object.Enviroment) object.Obje
 		return Eval(ie.Alternative, env)
 	} else {
 		return nullObj
+	}
+}
+
+func evalWhileExpression(we *ast.WhileExpression, env *object.Enviroment) object.Object {
+	var output object.Object
+	looped := false
+	for {
+		condition := Eval(we.Test, env)
+		if isError(condition) {
+			return condition
+		}
+
+		if isTruthy(condition) {
+			looped = true
+			output = Eval(we.Body, env)
+		} else {
+			if looped {
+				return output
+			}
+			return nullObj
+		}
 	}
 }
 

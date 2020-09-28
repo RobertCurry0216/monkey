@@ -306,6 +306,29 @@ func (ie *IfExpression) String() string {
 	return out.String()
 }
 
+//WhileExpression is a loop
+type WhileExpression struct {
+	Token token.Token
+	Test  Expression
+	Body  *BlockStatement
+}
+
+// TokenLiteral is string value of the token
+func (we *WhileExpression) TokenLiteral() string { return we.Token.Literal }
+func (we *WhileExpression) expressionNode()      {}
+func (we *WhileExpression) String() string {
+	var out bytes.Buffer
+
+	out.WriteString("while")
+	out.WriteString("( ")
+	out.WriteString(we.Test.String())
+	out.WriteString(" ) {\n")
+	out.WriteString(we.Body.String())
+	out.WriteString("\n}")
+
+	return out.String()
+}
+
 //CallExpression is the brackets after a function
 type CallExpression struct {
 	Token     token.Token
