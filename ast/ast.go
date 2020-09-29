@@ -279,6 +279,16 @@ func (b *Boolean) TokenLiteral() string { return b.Token.Literal }
 func (b *Boolean) expressionNode()      {}
 func (b *Boolean) String() string       { return b.Token.Literal }
 
+// Null => null
+type Null struct {
+	Token token.Token
+}
+
+// TokenLiteral is string value of the token
+func (n *Null) TokenLiteral() string { return n.Token.Literal }
+func (n *Null) expressionNode()      {}
+func (n *Null) String() string       { return n.Token.Literal }
+
 //IfExpression => if <condition> {<consequence} else {<Alternative>}
 type IfExpression struct {
 	Token       token.Token
@@ -373,6 +383,30 @@ func (ie *IndexExpression) String() string {
 	out.WriteString("[")
 	out.WriteString(ie.Index.String())
 	out.WriteString("])")
+
+	return out.String()
+}
+
+//HashLiteral is the dictonary
+type HashLiteral struct {
+	Token token.Token
+	Pairs map[Expression]Expression
+}
+
+// HashLiteral is string value of the token
+func (hl *HashLiteral) TokenLiteral() string { return hl.Token.Literal }
+func (hl *HashLiteral) expressionNode()      {}
+func (hl *HashLiteral) String() string {
+	var out bytes.Buffer
+
+	pairs := []string{}
+	for key, value := range hl.Pairs {
+		pairs = append(pairs, key.String()+":"+value.String())
+	}
+
+	out.WriteString("{")
+	out.WriteString(strings.Join(pairs, ", "))
+	out.WriteString("}")
 
 	return out.String()
 }

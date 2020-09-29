@@ -3,6 +3,7 @@ package object
 import (
 	"bytes"
 	"fmt"
+	"hash/fnv"
 	"monkey/ast"
 	"strings"
 )
@@ -17,6 +18,7 @@ const (
 	FunctionObj    = "FUNCTION"
 	BuiltinObj     = "BUILTIN"
 	ArrayObj       = "ARRAY"
+	HashObj        = "HASH"
 )
 
 //ObjectType is an enum that represents the object type
@@ -34,6 +36,17 @@ type Object interface {
 	Inspect() string
 }
 
+//Hashable represents types that can be used as a HashKey
+type Hashable interface {
+	HashKey() HashKey
+}
+
+//HashKey is for hashing values
+type HashKey struct {
+	Type  ObjectType
+	Value uint64
+}
+
 //Integer is the basic number object
 type Integer struct {
 	Value int64
@@ -44,6 +57,11 @@ func (i *Integer) Type() ObjectType { return IntegerObj }
 
 //Inspect gets the string representation
 func (i *Integer) Inspect() string { return fmt.Sprintf("%d", i.Value) }
+
+//HashKey gets a unique value for this object
+func (i *Integer) HashKey() HashKey {
+	return HashKey{Type: i.Type(), Value: uint64(i.Value)}
+}
 
 //String is the string primative
 type String struct {
@@ -56,6 +74,13 @@ func (s *String) Type() ObjectType { return StringObj }
 //Inspect gets the string representation
 func (s *String) Inspect() string { return s.Value }
 
+//HashKey gets a unique value for this object
+func (s *String) HashKey() HashKey {
+	h := fnv.New64a()
+	h.Write([]byte(s.Value))
+	return HashKey{Type: s.Type(), Value: h.Sum64()}
+}
+
 //Boolean is an object representing true or false
 type Boolean struct {
 	Value bool
@@ -66,6 +91,19 @@ func (b *Boolean) Type() ObjectType { return BooleanObj }
 
 //Inspect gets the string representation
 func (b *Boolean) Inspect() string { return fmt.Sprintf("%t", b.Value) }
+
+//HashKey gets a unique value for this object
+func (b *Boolean) HashKey() HashKey {
+	var value uint64
+
+	if b.Value {
+		value = 1
+	} else {
+		value = 0
+	}
+
+	return HashKey{Type: b.Type(), Value: value}
+}
 
 //Null is an object representing absence of a value
 type Null struct{}
@@ -158,6 +196,37 @@ func (a *Array) Inspect() string {
 	out.WriteString("[")
 	out.WriteString(strings.Join(elements, ", "))
 	out.WriteString("]")
+
+	return out.String()
+}
+
+// HashPair is a key value pair used in a hashmap
+type HashPair struct {
+	Key   Object
+	Value Object
+}
+
+//Hash is a hashmap
+type Hash struct {
+	Pairs map[HashKey]HashPair
+}
+
+// Type gets the ObjectType
+func (h *Hash) Type() ObjectType { return HashObj }
+
+//Inspect gets the string representation
+func (h *Hash) Inspect() string {
+	var out bytes.Buffer
+
+	pairs := []string{}
+	for _, pair := range h.Pairs {
+		pairs = append(pairs, fmt.Sprintf("%s: %s",
+			pair.Key.Inspect(), pair.Value.Inspect()))
+	}
+
+	out.WriteString("{")
+	out.WriteString(strings.Join(pairs, ", "))
+	out.WriteString("}")
 
 	return out.String()
 }
