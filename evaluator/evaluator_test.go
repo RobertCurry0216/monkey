@@ -395,6 +395,12 @@ func TestBuiltinFunctions(t *testing.T) {
 		{`rest([])`, nil},
 		{`push([], 1)`, []int{1}},
 		{`push(1, 1)`, "argument to `push` must be ARRAY, got INTEGER"},
+		{`bool(1)`, true},
+		{`bool(0)`, false},
+		{`bool("hello")`, true},
+		{`bool("")`, false},
+		{`bool([1])`, true},
+		{`let a =[]; bool(a)`, false},
 	}
 
 	for _, tt := range tests {

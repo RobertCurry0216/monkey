@@ -10,6 +10,7 @@ var builtins = map[string]*object.Builtin{
 	"last":  &object.Builtin{Fn: lastBuiltin},
 	"rest":  &object.Builtin{Fn: restBuiltin},
 	"push":  &object.Builtin{Fn: pushBuiltin},
+	"bool":  &object.Builtin{Fn: boolBuiltin},
 }
 
 func lenBuiltin(args ...object.Object) object.Object {
@@ -100,4 +101,15 @@ func pushBuiltin(args ...object.Object) object.Object {
 	newElements[length] = args[1]
 
 	return &object.Array{Elements: newElements}
+}
+
+func boolBuiltin(args ...object.Object) object.Object {
+	if len(args) != 1 {
+		return newError("wrong number of arguments. got=%d, want=1",
+			len(args))
+	}
+	if isTruthy(args[0]) {
+		return trueObj
+	}
+	return falseObj
 }

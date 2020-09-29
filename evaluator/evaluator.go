@@ -114,6 +114,10 @@ func isTruthy(obj object.Object) bool {
 		switch {
 		case obj.Type() == object.IntegerObj:
 			return obj.(*object.Integer).Value != 0
+		case obj.Type() == object.StringObj:
+			return obj.(*object.String).Value != ""
+		case obj.Type() == object.ArrayObj:
+			return len(obj.(*object.Array).Elements) != 0
 		default:
 			return false
 		}
@@ -209,12 +213,12 @@ func evalInfIxExpression(operator string, left, right object.Object) object.Obje
 		return evalIntegerInfixExpression(operator, left, right)
 	case left.Type() == object.StringObj && right.Type() == object.StringObj:
 		return evalStringInfixExpression(operator, left, right)
-	case operator == "==":
-		return nativeBoolToBoolObject(isTruthy(left) == isTruthy(right))
-	case operator == "!=":
-		return nativeBoolToBoolObject(isTruthy(left) != isTruthy(right))
 	case left.Type() != right.Type():
 		return newError("type mismatch: %s %s %s", left.Type(), operator, right.Type())
+	case operator == "==":
+		return nativeBoolToBoolObject(left == right)
+	case operator == "!=":
+		return nativeBoolToBoolObject(left != right)
 	default:
 		return newError("unknown operator: %s %s %s", left.Type(), operator, right.Type())
 	}
