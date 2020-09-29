@@ -87,6 +87,8 @@ func (l *Lexer) NextToken() token.Token {
 		tok = token.New(token.LT, l.ch)
 	case '>':
 		tok = token.New(token.GT, l.ch)
+	case '%':
+		tok = token.New(token.MODULO, l.ch)
 	case ',':
 		tok = token.New(token.COMMA, l.ch)
 	case ':':

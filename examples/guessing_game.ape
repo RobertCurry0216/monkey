@@ -1,0 +1,36 @@
+puts("+--------------------------------------+");
+puts("| Welcome to the Monkey Guessing Game! |");
+puts("+--------------------------------------+");
+puts("");
+puts("Do your best to guess the secret number");
+puts("It is between 0 and 100");
+puts("You have 5 tries!");
+
+let secret_number = random(100);
+
+let i = 5;
+let done = false;
+
+while (!done){
+    puts("guess number ", 6 - i)
+    let guess = geti("enter a number: ")
+    if (guess == secret_number){
+        let done = true;
+        puts("Correct!");
+        puts("you win 100 bananas!");
+    } else {
+        let i = i - 1;
+        if (i == 0) {
+            let done = true;
+            puts("sorry, you lost :(");
+            puts("the number was ", secret_number);
+        } else {
+            if (guess < secret_number){
+                puts("Too low, try again");
+            } else {
+                puts("Too high, try again");
+            }
+        }
+    }
+    puts("+---------------------+")
+}

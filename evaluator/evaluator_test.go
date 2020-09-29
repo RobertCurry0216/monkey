@@ -27,6 +27,7 @@ func TestEvalIntegerExpression(t *testing.T) {
 		{"3 * 3 * 3 + 10", 37},
 		{"3 * (3 * 3) + 10", 37},
 		{"(5 + 10 * 2 + 15 / 3) * 2 + -10", 50},
+		{"5 % 2", 1},
 	}
 
 	for _, tt := range tests {
@@ -395,9 +396,10 @@ func TestBuiltinFunctions(t *testing.T) {
 		{`last([1, 2, 3])`, 3},
 		{`last([])`, nil},
 		{`last(1)`, "argument to `last` must be ARRAY, got INTEGER"},
-		{`rest([1, 2, 3])`, []int{2, 3}},
+		{`rest([1, 2, 3])[0]`, 2},
+		{`rest([1, 2, 3])[1]`, 3},
 		{`rest([])`, nil},
-		{`push([], 1)`, []int{1}},
+		{`push([], 1)[0]`, 1},
 		{`push(1, 1)`, "argument to `push` must be ARRAY, got INTEGER"},
 		{`bool(1)`, true},
 		{`bool(0)`, false},
@@ -405,6 +407,9 @@ func TestBuiltinFunctions(t *testing.T) {
 		{`bool("")`, false},
 		{`bool([1])`, true},
 		{`let a =[]; bool(a)`, false},
+		{`let a =[]; push(a, 1); a[0];`, 1},
+		{`let a =[1]; pop(a); a;`, 1},
+		{`let a =[1]; replace(a, 0, 5); a[0];`, 5},
 	}
 
 	for _, tt := range tests {

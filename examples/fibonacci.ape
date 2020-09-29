@@ -1,0 +1,8 @@
+let fibbonacci = fn(x){
+    if (x < 3){ 
+        return 1;
+    }
+    return fibbonacci(x - 1) + fibbonacci(x - 2)
+}
+
+puts(fibbonacci(8))

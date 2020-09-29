@@ -1,0 +1,21 @@
+let i = 1;
+
+while (i < 101){
+    let out = "";
+
+    if (i % 3 == 0){
+        let out = out + "fizz";
+    }
+
+    if (i % 5 == 0){
+        let out = out + "buzz";
+    }
+
+    if (bool(out)){
+        puts(out);
+    } else {
+        puts(i);
+    }
+
+    let i = i + 1;
+}

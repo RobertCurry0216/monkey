@@ -34,6 +34,7 @@ const (
 	SLASH    = "/"
 	LT       = "<"
 	GT       = ">"
+	MODULO   = "%"
 
 	EQ    = "=="
 	NOTEQ = "!="
