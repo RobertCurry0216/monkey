@@ -1,0 +1,8 @@
+let i = 0;
+
+while (i < 10){
+    puts(i);
+    let i = i + 1;
+}
+
+puts("done");
