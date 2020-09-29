@@ -74,7 +74,7 @@ func fileExists(filename string) bool {
 }
 
 func checkExt(filename string) bool {
-	return filepath.Ext(filename) == ".ape"
+	return filepath.Ext(filename) == ".mky"
 }
 
 const monkeyFace = `            __,__
